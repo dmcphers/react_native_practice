@@ -4,6 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { event } from "react-native-reanimated";
 import * as Animatable from 'react-native-animatable'
+import * as Notifications from 'expo-notifications';
 
 
 const ReservationScreen = () => {
@@ -30,16 +31,21 @@ const ReservationScreen = () => {
             [
                 {
                     text: 'Cancel',
-                    onPress: () =>
-                        resetForm(),
+                    onPress: () => {
+                        console.log('Reservation Search Canceled');
+                        resetForm();
+                    },
                     style: 'cancel'
+                    
                 },
                 {
                     text: 'OK',
-                    onPress: () =>
-                    console.log(
-                        resetForm(),
-                    )
+                    onPress: () => {
+                        presentLocalNotification(
+                            date.toLocaleDateString('en-US')
+                        );
+                        resetForm();
+                    }
                 }
             ],
             { cancelable: false }
@@ -53,12 +59,38 @@ const ReservationScreen = () => {
         setShowCalendar(false);
     };
 
+    const presentLocalNotification = async (reservationDate) => {
+        const sendNotification = () => {
+            Notifications.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldShowAlert: true,
+                    shouldPlaySound: true,
+                    shouldSetBadge: true
+                })
+            });
+            Notifications.scheduleNotificationAsync({
+                content: {
+                    title: 'Your Campsite Reservation Search',
+                    body: `Search for ${reservationDate} requested`
+                },
+                trigger: null
+            });
+        }
+        let permissions = await Notifications.getPermissionsAsync();
+        if (!permissions.granted) {
+            permissions = await Notifications.requestPermissionsAsync();
+        }
+        if (permissions.granted) {
+            sendNotification();
+        }
+    };
+
     return (
         <ScrollView>
             <Animatable.View
-            animation='zoomIn'
-            duration={2000}
-            delay={1000}
+                animation='zoomIn'
+                duration={2000}
+                delay={1000}
             >
                 <View style={styles.formRow}>
                     <Text style={styles.formLabel}>Number of Campers:</Text>
