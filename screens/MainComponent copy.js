@@ -232,29 +232,24 @@ const Main = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        showNetInfo()
-        // const unsubscribeNetInfo = NetInfo.addEventListener( 
-        //     (connectionInfo) => {
-        //     handleConnectivityChange(connectionInfo);
-        // });
-        // return unsubscribeNetInfo;
-    });
-
-    const showNetInfo = async () => {
-        //NetInfo.fetch().then((connectionInfo) => {
-        const connectionInfo = await NetInfo.fetch();
-        Platform.OS === 'ios'
-            ? Alert.alert(
-                'Initial Network Connectivity Type:',
-                connectionInfo.type
-            )
-            : ToastAndroid.show(
-                'Initial Network Connectivity Type: ' +
-                connectionInfo.type,
-                ToastAndroid.LONG
-            );
-    };
-
+        NetInfo.fetch().then((connectionInfo) => {
+            Platform.OS === 'ios'
+                ? Alert.alert(
+                    'Initial Network Connectivity Type:',
+                    connectionInfo.type
+                )
+                : ToastAndroid.show(
+                    'Initial Network Connectivity Type: ' +
+                    connectionInfo.type,
+                    ToastAndroid.LONG
+                );
+        });
+        const unsubscribeNetInfo = NetInfo.addEventListener( 
+            (connectionInfo) => {
+            handleConnectivityChange(connectionInfo);
+        });
+        return unsubscribeNetInfo;
+    }, []);
 
     const handleConnectivityChange = (connectionInfo) => {
         let connectionMsg = 'You are now connected to an active network.';
@@ -273,11 +268,9 @@ const Main = () => {
                 break;
         }
         Platform.OS === 'ios'
-            ? Alert.alert('Connection change:', connectionMsg)
-            : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
+    ? Alert.alert('Connection change:', connectionMsg)
+    : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
     }
-
-
 
     return (
         <View style={{

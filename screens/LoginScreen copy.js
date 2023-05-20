@@ -6,8 +6,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as ImagePicker from 'expo-image-picker';
 import { baseUrl } from '../shared/baseUrl';
 import logo from '../assets/images/logo.png';
-//import * as ImageManipulator from 'expo-image-manipulator';
-import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
 
 
 const LoginTab = ({ navigation }) => {
@@ -151,33 +149,9 @@ const RegisterTab = () => {
             });
             if (capturedImage.assets) {
                 console.log(capturedImage.assets[0]);
-                //setImageUrl(capturedImage.assets[0].uri);
-                processImage(capturedImage.assets[0].uri)
+                setImageUrl(capturedImage.assets[0].uri);
             }
         }
-    }
-
-    const getImageFromGallery = async () => {
-        const mediaLibraryPermissions = await ImagePicker.requestCameraPermissionsAsync();
-        if (mediaLibraryPermissions.status === 'granted') {
-            const capturedImage = await ImagePicker.launchImageLibraryAsync({
-                allowsEditing: true,
-                aspect: [1, 1]
-            });
-            if (capturedImage.assets) {
-                console.log(capturedImage.assets[0]);
-                //setImageUrl(capturedImage.assets[0].uri);
-                processImage(capturedImage.assets[0].uri)
-            }
-        }
-    }
-
-    const processImage = async (imgUri) => {
-        const processedImage = await manipulateAsync(imgUri, 
-            [{ resize: {width: 400} }], {format: SaveFormat.PNG});
-            console.log(processedImage);
-            const imageUrl = setImageUrl(processedImage.uri);
-            
     }
 
     return (
@@ -190,7 +164,6 @@ const RegisterTab = () => {
                         style={styles.image}
                     />
                     <Button title='Camera' onPress={getImageFromCamera} />
-                    <Button title='Gallery' onPress={getImageFromGallery} />
                 </View>
                 <Input
                     placeholder='Username'
